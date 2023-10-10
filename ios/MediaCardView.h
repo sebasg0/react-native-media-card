@@ -14,4 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 #endif /* MediaCardViewNativeComponent_h */
+
+#else
+#import <UIKit/UIKit.h>
+
+@interface MediaCardView : UIView
+
+@property (nonatomic, strong) NSString *mediaUrl;
+@property (nonatomic, assign) NSInteger loopCount;
+
+@end
+
 #endif /* RCT_NEW_ARCH_ENABLED */

@@ -1,23 +1,17 @@
-#import <React/RCTViewManager.h>
 #import <React/RCTUIManager.h>
 #import "RCTBridge.h"
-#import "Utils.h"
-
-@interface MediaCardViewManager : RCTViewManager
-@end
+#import "MediaCardViewManager.h"
+#import "MediaCardView.h"
 
 @implementation MediaCardViewManager
 
 RCT_EXPORT_MODULE(MediaCardView)
 
-- (UIView *)view
-{
-  return [[UIView alloc] init];
+- (UIView *)view {
+    return [[MediaCardView alloc] init];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(color, NSString, UIView)
-{
-  [view setBackgroundColor: [Utils hexStringToColor:json]];
-}
+RCT_EXPORT_VIEW_PROPERTY(mediaUrl, NSString)
+RCT_EXPORT_VIEW_PROPERTY(loopCount, NSInteger)
 
 @end
