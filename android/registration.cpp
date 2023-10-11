@@ -7,6 +7,7 @@ namespace react {
 void registerProviders() {
     auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
     providerRegistry->add(concreteComponentDescriptorProvider<MediaCardViewComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<MediaCardCarouselComponentDescriptor>());
 }
 
 }

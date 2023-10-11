@@ -160,8 +160,17 @@
     ]
   },
   "codegenConfig": {
-    "name": "RNMediaCardViewSpec",
-    "type": "components",
-    "jsSrcsDir": "src"
+    "libraries": [
+      {
+        "name": "RNMediaCardViewSpec",
+        "type": "components",
+        "jsSrcsDir": "src"
+      },
+      {
+        "name": "RNMediaCardCarouselSpec",
+        "type": "components",
+        "jsSrcsDir": "src"
+      }
+    ]
   }
 }

@@ -1,12 +1,12 @@
 import * as React from 'react';
 
 import { StyleSheet, View } from 'react-native';
-import { MediaCardView } from 'react-native-media-card';
+import { MediaCardCarousel } from 'react-native-media-card';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <MediaCardView
+      <MediaCardCarousel
         text="Hola"
         loopCount={0}
         playerProps={{
@@ -17,7 +17,7 @@ export default function App() {
         }}
         style={styles.box}
       />
-      <MediaCardView
+      <MediaCardCarousel
         text="Hola"
         loopCount={0}
         playerProps={{
@@ -25,7 +25,7 @@ export default function App() {
         }}
         style={styles.box}
       />
-      <MediaCardView
+      <MediaCardCarousel
         text="Hola"
         loopCount={0}
         playerProps={{

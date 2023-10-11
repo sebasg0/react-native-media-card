@@ -41,7 +41,15 @@ def codegenViewModuleName = {
   // Autolink for Fabric uses codegenConfig.name in package.json since react-native@0.70
   // Use codegenViewLibraryName for compatibility with react-native@0.68/0.69
   def libraryManifestJson = new JsonSlurper().parseText(file("$projectDir/../package.json").text)
-  registrationCompat ? codegenViewLibraryName : libraryManifestJson.codegenConfig.name
+  registrationCompat ? codegenViewLibraryName : libraryManifestJson.codegenConfig.libraries[0].name
+}()
+
+def codegenViewLibraryName2 = "MediaCardCarousel"
+def codegenViewModuleName2 = {
+  // Autolink for Fabric uses codegenConfig.name in package.json since react-native@0.70
+  // Use codegenViewLibraryName for compatibility with react-native@0.68/0.69
+  def libraryManifestJson = new JsonSlurper().parseText(file("$projectDir/../package.json").text)
+  registrationCompat ? codegenViewLibraryName : libraryManifestJson.codegenConfig.libraries[1].name
 }()
 
 def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
@@ -90,6 +98,7 @@ android {
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
     buildConfigField "String", "CODEGEN_MODULE_REGISTRATION", (isNewArchitectureEnabled() && registrationCompat ? "\"${codegenViewModuleName}_registration\"" : "null")
+    buildConfigField "String", "CODEGEN_MODULE_REGISTRATION2", (isNewArchitectureEnabled() && registrationCompat ? "\"${codegenViewModuleName2}_registration\"" : "null")
 
     if (isNewArchitectureEnabled() && registrationCompat) {
       def reactAndroidProject = project(':ReactAndroid')
@@ -102,10 +111,12 @@ android {
                     "PROJECT_BUILD_DIR=${appProject.buildDir}", // for REACT_NDK_EXPORT_DIR in ReactAndroid's Android-prebuilt.mk
                     "REACT_ANDROID_DIR=${reactAndroidProject.projectDir}",
                     "REACT_ANDROID_BUILD_DIR=${reactAndroidProject.buildDir}",
-                    "CODEGEN_MODULE_NAME=$codegenViewModuleName"
+                    "CODEGEN_MODULE_NAME=$codegenViewModuleName",
+                    "CODEGEN_MODULE_NAME2=$codegenViewModuleName2"
           cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
           cppFlags "-std=c++17"
           targets "${codegenViewModuleName}_registration"
+          targets "${codegenViewModuleName2}_registration"
         }
       }
     }
