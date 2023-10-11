@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.mediacard.MediaCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mediaCardView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <!-- Other views if needed -->
+</com.mediacard.MediaCardView>
+

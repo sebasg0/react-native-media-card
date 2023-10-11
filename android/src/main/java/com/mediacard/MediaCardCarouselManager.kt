@@ -1,10 +1,13 @@
 package com.mediacard
 
 import android.graphics.Color
+import android.util.Log
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
+import com.mediacard.models.PlayerProps
 
 @ReactModule(name = MediaCardCarouselManager.NAME)
 class MediaCardCarouselManager : MediaCardCarouselManagerSpec<MediaCardCarousel>() {
@@ -16,18 +19,22 @@ class MediaCardCarouselManager : MediaCardCarouselManagerSpec<MediaCardCarousel>
         return MediaCardCarousel(context)
     }
 
-  @ReactProp(name = "playerProps")
-  override fun setPlayerProps(view: MediaCardCarousel?, playerProps: ReadableMap) {
-    val property1 = playerProps.getString("mediaUrl")
-    val property2 = playerProps.getString("placeHolderImage")
-    view?.setPlayerProps(property1 ?: "", property2 ?: "")
-    // Now use property1 and property2 in your native code
-  }
+  @ReactProp(name = "data")
+    override fun setData(view: MediaCardCarousel?, data: ReadableArray?) {
+      val playerPropsList: MutableList<PlayerProps> = mutableListOf()
 
-  @ReactProp(name = "loopCount")
-    override fun setLoopCount(view: MediaCardCarousel?, loopCount: Int?) {
-      // If loopCount doesn't come from JS, default to 1
-      view?.setLoopCount(loopCount ?: 1)
+      data?.let {
+        for (i in 0 until it.size()) {
+          Log.e("nooo", "aaaaa : $it")
+          val playerPropsMap = it.getMap(i)
+          val mediaUrl = playerPropsMap?.getString("mediaUrl")
+          val placeHolderImage = playerPropsMap?.getString("placeHolderImage")
+          val playerProps = PlayerProps(mediaUrl, placeHolderImage)
+          playerPropsList.add(playerProps)
+        }
+      }
+      Log.e("nooo", "aaaaa : $playerPropsList")
+      view?.setPlayerProps(playerPropsList)
     }
 
     companion object {

@@ -1,153 +1,75 @@
 package com.mediacard
 
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.SeekBar
-import android.widget.VideoView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.load.resource.gif.GifDrawable
-import com.bumptech.glide.request.target.ImageViewTarget
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.mediacard.adapters.MediaCardAdapter
+import com.mediacard.models.PlayerProps
 
 class MediaCardCarousel @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+  context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private val imageView: ImageView
-    private val videoView: VideoView
-    private val playPauseButton: ImageButton
-    private val seekBar: SeekBar
-    private val opacityBackground: View
-    private val hideControlsHandler = Handler(Looper.getMainLooper())
-    private val hideControlsRunnable = Runnable { hideControls() }
-    private val updateSeekBarRunnable = Runnable { updateSeekBar() }
-    private var currentMediaUrl: String? = null
+  private val recyclerView: RecyclerView
+  private var mediaCardAdapter: MediaCardAdapter? = null
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.media_card_view, this, true)
+  init {
+    val inflater = LayoutInflater.from(context)
+    val view = inflater.inflate(R.layout.media_carousel_view, this, true)
+    recyclerView = view.findViewById(R.id.recyclerView)
+    recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
-        imageView = findViewById(R.id.imageView)
-        videoView = findViewById(R.id.videoView)
-        playPauseButton = findViewById(R.id.playPauseButton)
-        seekBar = findViewById(R.id.seekBar)
-        opacityBackground = findViewById(R.id.opacityBackground)
+    // Add the PagerSnapHelper
+    val snapHelper = PagerSnapHelper()
+    snapHelper.attachToRecyclerView(recyclerView)
+    recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+      override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        super.onScrolled(recyclerView, dx, dy)
 
-        videoView.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                if (playPauseButton.visibility == VISIBLE) {
-                    hideControls()
-                } else {
-                    showControls()
-                }
-            }
-            true
+        // Find the position of the item that is now in the center of the screen
+        val centerPosition = (recyclerView.layoutManager as LinearLayoutManager)
+          .findFirstVisibleItemPosition()
+
+        // Preload videos around this position
+        mediaCardAdapter?.preloadVideosAroundPosition(centerPosition)
+      }
+      override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+        super.onScrollStateChanged(recyclerView, newState)
+        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+          resetAdjacentVideos()
         }
+      }
+    })
 
-        playPauseButton.setOnClickListener { togglePlayPause() }
+  }
 
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    videoView.seekTo(progress)
-                }
-            }
+  private fun resetAdjacentVideos() {
+    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+    val visiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition()
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                // Optional: Do something when user starts moving the SeekBar
-            }
+    if (visiblePosition != RecyclerView.NO_POSITION) {
+      // Reset the video on the left
+      if (visiblePosition > 0) {
+        mediaCardAdapter?.resetVideoAtPosition(recyclerView, visiblePosition - 1)
+      }
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                // Optional: Do something when user stops moving the SeekBar
-            }
-        })
+      // Reset the video on the right
+      if (visiblePosition < mediaCardAdapter?.itemCount ?: 0 - 1) {
+        mediaCardAdapter?.resetVideoAtPosition(recyclerView, visiblePosition + 1)
+      }
     }
+  }
 
-    fun setPlayerProps(mediaUrl: String, placeholderUrl: String) {
-        currentMediaUrl = mediaUrl
+  fun setPlayerProps(playerPropsList: List<PlayerProps>) {
+    val adapter = MediaCardAdapter(context, playerPropsList)
+    mediaCardAdapter = adapter
+    recyclerView.adapter = adapter
+  }
 
-        if (mediaUrl.endsWith(".mp4") || mediaUrl.endsWith(".mov")) {
-            imageView.visibility = VISIBLE
-            videoView.visibility = VISIBLE
-            showControls()
-
-            Glide.with(context)
-                .load(placeholderUrl)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(imageView)
-
-            videoView.setVideoURI(Uri.parse(mediaUrl))
-            videoView.setOnPreparedListener {
-                imageView.visibility = GONE
-                seekBar.max = videoView.duration
-                updateSeekBar()
-            }
-
-            videoView.setOnErrorListener { _, what, extra ->
-                Log.e("VideoView", "Error loading video: $what, $extra")
-                true
-            }
-            videoView.start()
-        } else {
-            imageView.visibility = VISIBLE
-            Glide.with(context)
-                .load(mediaUrl)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(imageView)
-        }
-    }
-
-    private fun showControls() {
-        playPauseButton.visibility = VISIBLE
-        seekBar.visibility = VISIBLE
-        opacityBackground.visibility = VISIBLE
-        hideControlsHandler.postDelayed(hideControlsRunnable, 5000)
-    }
-
-    private fun hideControls() {
-        playPauseButton.visibility = GONE
-        seekBar.visibility = GONE
-        opacityBackground.visibility = GONE
-        hideControlsHandler.removeCallbacks(hideControlsRunnable)
-    }
-
-    fun setLoopCount(loopCount: Int) {
-        if (!currentMediaUrl?.endsWith(".mp4")!! && !currentMediaUrl?.endsWith(".mov")!!) {
-            Glide.with(context)
-                .load(currentMediaUrl)
-                .into(object : ImageViewTarget<Drawable>(imageView) {
-                    override fun setResource(resource: Drawable?) {
-                        if (resource is GifDrawable) {
-                            resource.setLoopCount(loopCount)
-                        }
-                        imageView.setImageDrawable(resource)
-                    }
-                })
-        }
-    }
-
-    private fun togglePlayPause() {
-        if (videoView.isPlaying) {
-            videoView.pause()
-            playPauseButton.setImageResource(R.drawable.ic_play)
-        } else {
-            videoView.start()
-            playPauseButton.setImageResource(R.drawable.ic_pause)
-        }
-    }
-
-    private fun updateSeekBar() {
-        seekBar.progress = videoView.currentPosition
-        hideControlsHandler.postDelayed(updateSeekBarRunnable, 1000)
-    }
 }
+

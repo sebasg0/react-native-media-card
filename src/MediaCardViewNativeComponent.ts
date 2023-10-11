@@ -6,7 +6,6 @@ interface NativeProps extends ViewProps {
     mediaUrl?: string;
     placeHolderImage?: string;
   };
-  text?: string;
   loopCount?: number;
 }
 

@@ -88,16 +88,16 @@ class MediaCardView @JvmOverloads constructor(
 
             videoView.setVideoURI(Uri.parse(mediaUrl))
             videoView.setOnPreparedListener {
-                imageView.visibility = GONE
-                seekBar.max = videoView.duration
-                updateSeekBar()
+              imageView.visibility = INVISIBLE
+              seekBar.max = videoView.duration
+              updateSeekBar()
             }
-
             videoView.setOnErrorListener { _, what, extra ->
                 Log.e("VideoView", "Error loading video: $what, $extra")
                 true
             }
             videoView.start()
+
         } else {
             imageView.visibility = VISIBLE
             Glide.with(context)
@@ -146,7 +146,13 @@ class MediaCardView @JvmOverloads constructor(
         }
     }
 
-    private fun updateSeekBar() {
+    fun resetVideo() {
+      Log.e("HEEHEHE", "SISIISI")
+      videoView.stopPlayback()
+    }
+
+
+  private fun updateSeekBar() {
         seekBar.progress = videoView.currentPosition
         hideControlsHandler.postDelayed(updateSeekBarRunnable, 1000)
     }
