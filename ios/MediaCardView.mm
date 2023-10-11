@@ -106,7 +106,6 @@ Class<RCTComponentViewProtocol> MediaCardViewCls(void)
     // Determine the type of media (e.g., image, GIF, video) based on the URL or file type.
     if ([_mediaUrl hasSuffix:@".mp4"] || [_mediaUrl hasSuffix:@".mov"]) {
         // Handle video
-        NSLog(@"VIDEOOO is a log message");
 
         _imageView.hidden = YES;
         _playerLayer.hidden = NO;
@@ -130,7 +129,6 @@ Class<RCTComponentViewProtocol> MediaCardViewCls(void)
             if ([image isKindOfClass:[SDAnimatedImage class]]) {
                 SDAnimatedImage *animatedImage = (SDAnimatedImage *)image;
                 self->_imageView.animationRepeatCount = self.loopCount; // or set to 1 to play only once
-                NSLog(@"Loop count: %lu", (unsigned long)animatedImage.sd_imageLoopCount);
                 if (!self->_imageView.isAnimating) {
                     [self->_imageView startAnimating];
                 }

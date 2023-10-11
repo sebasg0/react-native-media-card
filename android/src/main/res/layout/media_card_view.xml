@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+
+
+  <!-- VideoView for video playback -->
+  <VideoView
+    android:id="@+id/videoView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone" />
+
+
+  <View
+    android:id="@+id/opacityBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#66000000"
+    android:visibility="gone"/>
+
+  <!-- Play/Pause ImageButton -->
+  <ImageButton
+    android:id="@+id/playPauseButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="?android:attr/selectableItemBackground"
+    android:src="@drawable/ic_pause"
+    android:visibility="gone" />
+
+  <!-- SeekBar for video scrubbing -->
+  <SeekBar
+    android:id="@+id/seekBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:layout_marginBottom="16dp"
+    android:visibility="gone" />
+
+  <!-- Placeholder ImageView -->
+  <ImageView
+    android:id="@+id/imageView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scaleType="centerCrop" />
+</FrameLayout>

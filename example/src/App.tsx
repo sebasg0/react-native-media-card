@@ -9,23 +9,29 @@ export default function App() {
       <MediaCardView
         text="Hola"
         loopCount={0}
-        mediaUrl="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        playerProps={{
+          placeHolderImage:
+            'https://i.blogs.es/6f44dd/google-2015-1/1366_2000.jpg',
+          mediaUrl:
+            'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        }}
         style={styles.box}
-        color="red"
       />
       <MediaCardView
         text="Hola"
         loopCount={0}
-        mediaUrl="https://media1.giphy.com/media/Ju7l5y9osyymQ/giphy.gif"
+        playerProps={{
+          mediaUrl: 'https://media1.giphy.com/media/Ju7l5y9osyymQ/giphy.gif',
+        }}
         style={styles.box}
-        color="red"
       />
       <MediaCardView
         text="Hola"
         loopCount={0}
-        mediaUrl="https://i.blogs.es/6f44dd/google-2015-1/1366_2000.jpg"
+        playerProps={{
+          mediaUrl: 'https://i.blogs.es/6f44dd/google-2015-1/1366_2000.jpg',
+        }}
         style={styles.box}
-        color="red"
       />
     </View>
   );

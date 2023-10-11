@@ -2,7 +2,10 @@ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNati
 import type { ViewProps } from 'react-native';
 
 interface NativeProps extends ViewProps {
-  mediaUrl?: string;
+  playerProps?: {
+    mediaUrl?: string;
+    placeHolderImage?: string;
+  };
   text?: string;
   loopCount?: number;
 }
